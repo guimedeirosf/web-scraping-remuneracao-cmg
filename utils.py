@@ -25,7 +25,7 @@ def setup_browser(download_dir):
 def get_filename(ano, mes):
     return f"{ano}_{mes:02d}.csv"
 
-def process_month(driver, wait, ano, mes, download_dir):
+def process_month( wait, ano, mes, download_dir):
     # Selecionando o ano e mes
     ano_dropdown = Select(wait.until(EC.element_to_be_clickable((By.ID, 'ano'))))
     ano_dropdown.select_by_value(ano)
@@ -56,15 +56,7 @@ def process_month(driver, wait, ano, mes, download_dir):
     time.sleep(5) 
 
     # Renomear o arquivo
-    files = os.listdir(download_dir)
-    for file in files:
-        if file.endswith(".txt"):
-            old_file_path = os.path.join(download_dir, file)
-            new_file_name = f"{ano}_{mes.zfill(2)}.txt"
-            new_file_path = os.path.join(download_dir, new_file_name)
-            os.rename(old_file_path, new_file_path)
-            print(f"Arquivo renomeado para: {new_file_name}")
-            break
+    rename_recent_file(download_dir, ano, mes)
 
 
 def process_all_months(start_year):
@@ -97,8 +89,33 @@ def process_all_months(start_year):
         
         while mes <= mes_anterior:
             print(f"Processando {ano}-{mes:02d}")
-            process_month(driver, wait, str(ano), str(mes), download_dir)
+            process_month(wait, str(ano), str(mes), download_dir)
             mes += 1
     
     # Fechar o navegador
     driver.quit()
+
+def rename_recent_file(download_dir, year, month):
+    # Encontrar o arquivo mais recente que não começa com o ano esperado
+    files = os.listdir(download_dir)
+    files = [f for f in files if f.endswith(".txt")] 
+    
+    if not files:
+        print("Nenhum arquivo .txt encontrado para renomear.")
+        return
+    
+    # Ordenar arquivos por data de modificação
+    files.sort(key=lambda f: os.path.getmtime(os.path.join(download_dir, f)), reverse=True)
+    
+    recent_file = files[0]
+    if recent_file.startswith(f"{year}_"):
+        print(f"O arquivo {recent_file} já está com o nome correto.")
+        return
+    
+    # Renomear o arquivo
+    old_file_path = os.path.join(download_dir, recent_file)
+    new_file_name = f"{year}_{month.zfill(2)}.txt"
+    new_file_path = os.path.join(download_dir, new_file_name)
+    
+    os.rename(old_file_path, new_file_path)
+    print(f"Arquivo renomeado para: {new_file_name}")
