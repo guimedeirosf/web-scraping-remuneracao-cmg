@@ -77,17 +77,16 @@ def process_all_months(start_year):
     mes_anterior = mes_atual - 1
     if mes_anterior == 0:
         mes_anterior = 12
-        ano_atual -= 1
-    
+        ano_maximo = ano_atual - 1
+    else:
+        ano_maximo = ano_atual  
+    mes_maximo = 12
     # Iterando sobre os anos e meses
-    for ano in range(start_year, ano_atual + 1):
+    for ano in range(start_year, ano_maximo + 1):
         mes = 1
-        if ano == ano_atual:
-            mes = 1
-        else:
-            mes = 1
-        
-        while mes <= mes_anterior:
+        if ano == ano_maximo:
+            mes_maximo = mes_anterior
+        while mes <= mes_maximo :
             print(f"Processando {ano}-{mes:02d}")
             process_month(wait, str(ano), str(mes), download_dir)
             mes += 1
