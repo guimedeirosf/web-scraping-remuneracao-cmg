@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from datetime import datetime
 import time
+import pandas as pd
 
 def setup_browser(download_dir):
     chrome_options = Options()
@@ -59,13 +60,13 @@ def process_month( wait, ano, mes, download_dir):
     rename_recent_file(download_dir, ano, mes)
 
 
-def process_all_months(start_year):
+def process_all_months(start_year, link):
     # Configuração do diretório de downloads
     download_dir = os.path.join(os.getcwd(), "downloads")
     
     # Abrindo o navegador
     driver = setup_browser(download_dir)
-    driver.get('https://camaragoiania.centi.com.br/servidor/remuneracao')
+    driver.get(link)
     
     # Esperando a página carregar
     wait = WebDriverWait(driver, 20)
@@ -118,3 +119,47 @@ def rename_recent_file(download_dir, year, month):
     
     os.rename(old_file_path, new_file_path)
     print(f"Arquivo renomeado para: {new_file_name}")
+
+# Função para carregar os arquivos da pasta
+def carregar_arquivos(directory = ""):
+    if directory :
+        directory = directory
+    elif directory == "":
+        directory = os.path.join(os.getcwd(), "downloads")
+    arquivos = []
+    for filename in os.listdir(directory):
+        if filename.endswith('.txt'):
+            arquivos.append(os.path.join(directory, filename))
+    return arquivos
+
+# Função para extrair ano e mês do nome do arquivo
+def extrair_ano_mes(nome_arquivo):
+    base_name = os.path.basename(nome_arquivo)
+    ano_mes = base_name.split('.')[0]
+    ano, mes = ano_mes.split('_')
+    return f"{ano}/{mes}", ano, mes
+
+# Função para concatenar os arquivos txt em um csv
+def concatenar_arquivos(arquivos, cidade, estado):
+    tabela_completa = []
+    for nome_arquivo in arquivos:
+        df = pd.read_csv(nome_arquivo, sep=';', encoding='utf-8')
+
+        ano_mes, ano, mes = extrair_ano_mes(nome_arquivo)
+        df['Ano/Mes'] = ano_mes
+        df['Ano'] = ano
+        df['Mes'] = mes
+        df['Cidade'] = cidade
+        df['Estado'] = estado
+        df['Pais'] = "Brasil"
+        df.rename(columns={'Mes': 'Mês', 'Pais': 'País', 'Ano/Mes':'Ano/Mês'}, inplace=True) 
+        tabela_completa.append(df)
+
+    # Concatenar todos os DataFrames em uma única tabela
+    tabela_final = pd.concat(tabela_completa, ignore_index=True)
+    print(tabela_final.head())
+
+    # Salvar a tabela final em um arquivo CSV
+    output_path = "folha_salario_completa.csv"  
+    tabela_final.to_csv(output_path, index=False, encoding='utf-8')
+    print(f"Arquivo salvo em: {output_path}")
