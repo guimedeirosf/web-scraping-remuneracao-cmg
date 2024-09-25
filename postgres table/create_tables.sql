@@ -1,8 +1,18 @@
+DROP TABLE FatoPagamento;
+DROP TABLE DimFuncionario;
+DROP TABLE DimLotacao;
+DROP TABLE DimCargo;
+DROP TABLE DimTipoAdmissao;
+DROP TABLE DimLocalidade;
+DROP TABLE DimTipoPagamento;
+
 CREATE TABLE DimLotacao (
     LotacaoID SERIAL PRIMARY KEY,
-    Lotacao VARCHAR(100) NOT NULL,  
-    Movimentacao VARCHAR(100)  
+    Lotacao VARCHAR(100) NOT NULL 
+    --Movimentacao VARCHAR(100)  
 );
+
+
 
 CREATE TABLE DimCargo (
     CargoID SERIAL PRIMARY KEY,
