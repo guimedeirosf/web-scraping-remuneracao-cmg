@@ -58,6 +58,7 @@ CREATE TABLE FatoPagamento (
     SalarioBase DECIMAL(10, 2), 
     TotalProventos DECIMAL(10, 2),  
     TotalDescObrigatorios DECIMAL(10, 2),  
+    Movimentacao VARCHAR(100) -- Movimentação se é afastamento ou se é normal
     TipoPagamentoID INT REFERENCES DimTipoPagamento(TipoPagamentoID),  -- Chave para DimTipoPagamento
     LocalidadeID INT REFERENCES DimLocalidade(LocalidadeID),  -- Chave para DimLocalidade
     Ano INT NOT NULL,  
