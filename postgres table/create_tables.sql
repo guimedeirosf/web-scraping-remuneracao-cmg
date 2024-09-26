@@ -35,9 +35,9 @@ CREATE TABLE DimTipoPagamento (
 
 CREATE TABLE DimLocalidade (
     LocalidadeID SERIAL PRIMARY KEY,
-    Cidade VARCHAR(100) NOT NULL,  -- Cidade
-    Estado VARCHAR(50) NOT NULL,  -- Estado
-    Pais VARCHAR(50) NOT NULL  -- País
+    Cidade VARCHAR(100) NOT NULL,  
+    Estado VARCHAR(50) NOT NULL,  
+    Pais VARCHAR(50) NOT NULL 
 );
 
 CREATE TABLE DimFuncionario (
@@ -47,19 +47,19 @@ CREATE TABLE DimFuncionario (
     DataAdmissao DATE NOT NULL,  
     TipoAdmissaoID INT REFERENCES DimTipoAdmissao(TipoAdmissaoID),  -- Chave para DimTipoAdmissao
     CargoID INT REFERENCES DimCargo(CargoID),  -- Chave para DimCargo
-    LotacaoID INT REFERENCES DimLotacao(LotacaoID)  
+    LotacaoID INT REFERENCES DimLotacao(LotacaoID)   -- Chave para DimTipoAdmissao
 );
 
 
 CREATE TABLE FatoPagamento (
     PagamentoID SERIAL PRIMARY KEY,
-    FuncionarioID INT REFERENCES DimFuncionario(FuncionarioID), 
+    FuncionarioID INT REFERENCES DimFuncionario(FuncionarioID), -- Chave para DimFuncionario
     Decreto VARCHAR(100),  
     SalarioBase DECIMAL(10, 2), 
     TotalProventos DECIMAL(10, 2),  
     TotalDescObrigatorios DECIMAL(10, 2),  
-    TipoPagamentoID INT REFERENCES DimTipoPagamento(TipoPagamentoID),  
-    LocalidadeID INT REFERENCES DimLocalidade(LocalidadeID),  
+    TipoPagamentoID INT REFERENCES DimTipoPagamento(TipoPagamentoID),  -- Chave para DimTipoPagamento
+    LocalidadeID INT REFERENCES DimLocalidade(LocalidadeID),  -- Chave para DimLocalidade
     Ano INT NOT NULL,  
     Mes INT NOT NULL 
 );
